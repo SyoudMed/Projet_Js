@@ -39,4 +39,44 @@ class Project {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllActiveProjects($search = '', $secteur = '') {
+        $query = "SELECT p.*, u.nom, u.prenom, u.nom_entreprise 
+                  FROM " . $this->table_name . " p 
+                  JOIN users u ON p.startuper_id = u.id 
+                  WHERE p.statut IN ('en_attente', 'actif')"; // Temporarily allowing en_attente for testing
+        
+        if (!empty($search)) {
+            $query .= " AND (p.titre LIKE :search OR p.description LIKE :search)";
+        }
+        if (!empty($secteur)) {
+            $query .= " AND p.secteur = :secteur";
+        }
+        
+        $query .= " ORDER BY p.created_at DESC";
+        
+        $stmt = $this->conn->prepare($query);
+        
+        if (!empty($search)) {
+            $searchTerm = "%{$search}%";
+            $stmt->bindParam(":search", $searchTerm);
+        }
+        if (!empty($secteur)) {
+            $stmt->bindParam(":secteur", $secteur);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getProjectById($id) {
+        $query = "SELECT p.*, u.nom, u.prenom, u.nom_entreprise 
+                  FROM " . $this->table_name . " p 
+                  JOIN users u ON p.startuper_id = u.id 
+                  WHERE p.id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

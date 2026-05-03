@@ -1,6 +1,18 @@
-    <footer class="mt-auto py-3 bg-dark text-white text-center">
+    <footer class="mt-auto py-5 bg-surface border-top border-custom text-center text-muted-custom">
         <div class="container">
-            <span class="text-white-50">&copy; <?= date('Y') ?> StartuPInvest. Tous droits réservés.</span>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="mb-3 mb-md-0 fw-semibold text-main fs-5">
+                    <i class="fa-solid fa-bolt text-primary me-2"></i>StartuPInvest
+                </div>
+                <div class="mb-3 mb-md-0">
+                    <a href="#" class="text-muted-custom me-3 text-decoration-none">À propos</a>
+                    <a href="#" class="text-muted-custom me-3 text-decoration-none">Confidentialité</a>
+                    <a href="#" class="text-muted-custom text-decoration-none">Conditions</a>
+                </div>
+                <div class="text-muted-custom small">
+                    &copy; <?= date('Y') ?> StartuPInvest.
+                </div>
+            </div>
         </div>
     </footer>
     
@@ -31,11 +43,9 @@
                 if(!themeToggleBtn) return;
                 const icon = themeToggleBtn.querySelector('i');
                 if (theme === 'dark') {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
+                    icon.className = 'fa-solid fa-sun text-warning';
                 } else {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
+                    icon.className = 'fa-solid fa-moon';
                 }
             }
         });
