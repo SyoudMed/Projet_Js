@@ -1,0 +1,63 @@
+<?php
+namespace App\Models;
+
+use Config\Database;
+use PDO;
+
+class User {
+    private $conn;
+    private $table_name = "users";
+
+    public function __construct() {
+        $this->conn = Database::getInstance()->getConnection();
+    }
+
+    public function create($data) {
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (nom, prenom, cin, email, pseudo, password, role, nom_entreprise, adresse_entreprise, registre_commerce) 
+                  VALUES (:nom, :prenom, :cin, :email, :pseudo, :password, :role, :nom_entreprise, :adresse_entreprise, :registre_commerce)";
+        
+        $stmt = $this->conn->prepare($query);
+
+        $stmt->bindParam(":nom", $data['nom']);
+        $stmt->bindParam(":prenom", $data['prenom']);
+        $stmt->bindParam(":cin", $data['cin']);
+        $stmt->bindParam(":email", $data['email']);
+        $stmt->bindParam(":pseudo", $data['pseudo']);
+        
+        $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $stmt->bindParam(":password", $hashed_password);
+        
+        $stmt->bindParam(":role", $data['role']);
+        $stmt->bindParam(":nom_entreprise", $data['nom_entreprise']);
+        $stmt->bindParam(":adresse_entreprise", $data['adresse_entreprise']);
+        $stmt->bindParam(":registre_commerce", $data['registre_commerce']);
+
+        return $stmt->execute();
+    }
+
+    public function login($pseudo_or_email, $password) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE pseudo = :pseudo OR email = :email LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":pseudo", $pseudo_or_email);
+        $stmt->bindParam(":email", $pseudo_or_email);
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if(password_verify($password, $row['password'])) {
+                return $row;
+            }
+        }
+        return false;
+    }
+
+    public function checkExists($email, $pseudo) {
+        $query = "SELECT id FROM " . $this->table_name . " WHERE email = :email OR pseudo = :pseudo";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $email);
+        $stmt->bindParam(":pseudo", $pseudo);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+}
