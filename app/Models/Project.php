@@ -44,7 +44,7 @@ class Project {
         $query = "SELECT p.*, u.nom, u.prenom, u.nom_entreprise 
                   FROM " . $this->table_name . " p 
                   JOIN users u ON p.startuper_id = u.id 
-                  WHERE p.statut IN ('en_attente', 'actif')"; // Temporarily allowing en_attente for testing
+                  WHERE p.statut = 'actif'"; // Temporarily allowing en_attente for testing
         
         if (!empty($search)) {
             $query .= " AND (p.titre LIKE :search OR p.description LIKE :search)";
@@ -78,5 +78,23 @@ class Project {
         $stmt->bindParam(":id", $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllProjects() {
+        $query = "SELECT p.*, u.nom, u.prenom, u.nom_entreprise 
+                  FROM " . $this->table_name . " p 
+                  JOIN users u ON p.startuper_id = u.id 
+                  ORDER BY p.created_at DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateStatus($id, $status) {
+        $query = "UPDATE " . $this->table_name . " SET statut = :status WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":status", $status);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 }

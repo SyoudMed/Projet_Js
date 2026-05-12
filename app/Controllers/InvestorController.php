@@ -4,12 +4,13 @@ namespace App\Controllers;
 use App\Models\Project;
 use App\Models\Investment;
 use App\Models\Favorite;
+use App\Models\Review;
 
 class InvestorController {
     
     public function __construct() {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'capital_risque') {
-            header("Location: /js_project/public/auth/login");
+            header("Location: " . URLROOT . "/auth/login");
             exit;
         }
     }
@@ -43,15 +44,19 @@ class InvestorController {
     public function project() {
         $id = $_GET['id'] ?? null;
         if (!$id) {
-            header("Location: /js_project/public/investor/catalog");
+            header("Location: " . URLROOT . "/investor/catalog");
             exit;
         }
 
         $projectModel = new Project();
+        $reviewModel = new Review();
+        
         $project = $projectModel->getProjectById($id);
+        $reviews = $reviewModel->getReviewsByProject($id);
+        $avgRating = $reviewModel->getAverageRating($id);
 
         if (!$project) {
-            header("Location: /js_project/public/investor/catalog");
+            header("Location: " . URLROOT . "/investor/catalog");
             exit;
         }
 
@@ -78,12 +83,12 @@ class InvestorController {
                 ];
                 
                 if ($investmentModel->create($data)) {
-                    header("Location: /js_project/public/investor/dashboard?success=1");
+                    header("Location: " . URLROOT . "/investor/dashboard?success=1");
                     exit;
                 }
             }
         }
-        header("Location: /js_project/public/investor/catalog");
+        header("Location: " . URLROOT . "/investor/catalog");
         exit;
     }
 
@@ -93,8 +98,25 @@ class InvestorController {
             $favoriteModel = new Favorite();
             $favoriteModel->toggle($_SESSION['user_id'], $project_id);
             
-            $referer = $_SERVER['HTTP_REFERER'] ?? '/js_project/public/investor/catalog';
+            $referer = $_SERVER['HTTP_REFERER'] ?? URLROOT . '/investor/catalog';
             header("Location: " . $referer);
+            exit;
+        }
+    }
+
+    public function addReview() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [
+                'user_id' => $_SESSION['user_id'],
+                'project_id' => $_POST['project_id'],
+                'note' => $_POST['note'],
+                'commentaire' => $_POST['commentaire']
+            ];
+
+            $reviewModel = new Review();
+            $reviewModel->create($data);
+            
+            header("Location: " . URLROOT . "/investor/project?id=" . $data['project_id']);
             exit;
         }
     }

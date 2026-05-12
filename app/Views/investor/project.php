@@ -3,7 +3,7 @@
 
 <main class="container mt-5 mb-5 flex-grow-1">
     <div class="mb-4">
-        <a href="/js_project/public/investor/catalog" class="btn btn-sm btn-light border-custom"><i class="fa-solid fa-arrow-left me-2"></i>Retour au catalogue</a>
+        <a href="<?= URLROOT ?>/investor/catalog" class="btn btn-sm btn-light border-custom"><i class="fa-solid fa-arrow-left me-2"></i>Retour au catalogue</a>
     </div>
 
     <div class="row g-4">
@@ -11,7 +11,7 @@
         <div class="col-lg-8">
             <div class="saas-card border-0 overflow-hidden mb-4">
                 <?php if($project['image_path']): ?>
-                    <img src="/js_project/public<?= htmlspecialchars($project['image_path']) ?>" class="w-100 object-fit-cover border-bottom border-custom" style="height: 300px;" alt="Project Image">
+                    <img src="<?= URLROOT ?><?= htmlspecialchars($project['image_path']) ?>" class="w-100 object-fit-cover border-bottom border-custom" style="height: 300px;" alt="Project Image">
                 <?php else: ?>
                     <div class="w-100 bg-bg-color border-bottom border-custom d-flex align-items-center justify-content-center" style="height: 300px;">
                         <i class="fa-solid fa-image fa-4x text-muted-custom opacity-25"></i>
@@ -21,13 +21,23 @@
                 <div class="p-4 p-md-5">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-medium border border-primary border-opacity-25"><?= htmlspecialchars($project['secteur']) ?></span>
-                        <form method="POST" action="/js_project/public/investor/toggleFavorite">
+                        <form method="POST" action="<?= URLROOT ?>/investor/toggleFavorite">
                             <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
                             <button type="submit" class="btn btn-outline-warning btn-sm hover-elevate"><i class="fa-regular fa-star me-2"></i>Ajouter aux favoris</button>
                         </form>
                     </div>
 
                     <h1 class="fw-bold text-main mb-3"><?= htmlspecialchars($project['titre']) ?></h1>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="text-warning me-2">
+                            <?php for($i=1; $i<=5; $i++): ?>
+                                <i class="fa-<?= $i <= $avgRating ? 'solid' : 'regular' ?> fa-star"></i>
+                            <?php endfor; ?>
+                        </div>
+                        <span class="fw-bold text-main"><?= $avgRating ?>/5</span>
+                        <span class="text-muted-custom ms-2">(<?= count($reviews) ?> avis)</span>
+                    </div>
                     
                     <div class="d-flex align-items-center mb-5 text-muted-custom">
                         <i class="fa-solid fa-building me-2"></i><span class="me-4 fw-medium"><?= htmlspecialchars($project['nom_entreprise']) ?></span>
@@ -40,12 +50,65 @@
 
                     <h5 class="fw-semibold mb-3 border-bottom border-custom pb-2">Documents</h5>
                     <?php if($project['business_plan_path']): ?>
-                        <a href="/js_project/public<?= htmlspecialchars($project['business_plan_path']) ?>" target="_blank" class="btn btn-light border-custom hover-elevate text-main">
+                        <a href="<?= URLROOT ?><?= htmlspecialchars($project['business_plan_path']) ?>" target="_blank" class="btn btn-light border-custom hover-elevate text-main mb-5">
                             <i class="fa-regular fa-file-pdf text-danger me-2"></i>Télécharger le Business Plan
                         </a>
                     <?php else: ?>
-                        <p class="text-muted-custom">Aucun document joint.</p>
+                        <p class="text-muted-custom mb-5">Aucun document joint.</p>
                     <?php endif; ?>
+
+                    <!-- Reviews Section -->
+                    <div class="mt-5 pt-5 border-top border-custom">
+                        <h4 class="fw-bold text-main mb-4">Avis des investisseurs</h4>
+                        
+                        <!-- Review Form -->
+                        <div class="bg-surface rounded-4 p-4 mb-5 border border-custom">
+                            <h6 class="fw-bold mb-3">Laisser un avis</h6>
+                            <form method="POST" action="<?= URLROOT ?>/investor/addReview">
+                                <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted-custom">Note</label>
+                                    <div class="rating-input d-flex gap-2">
+                                        <?php for($i=1; $i<=5; $i++): ?>
+                                            <input type="radio" name="note" value="<?= $i ?>" id="star<?= $i ?>" class="btn-check" required <?= $i==5 ? 'checked' : '' ?>>
+                                            <label class="btn btn-outline-warning border-custom btn-sm px-3" for="star<?= $i ?>"><?= $i ?> <i class="fa-solid fa-star ms-1"></i></label>
+                                        <?php endfor; ?>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea name="commentaire" class="form-control bg-bg-color border-custom" rows="3" placeholder="Qu'avez-vous pensé de ce projet ?" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm px-4">Publier mon avis</button>
+                            </form>
+                        </div>
+
+                        <!-- Review List -->
+                        <?php if(empty($reviews)): ?>
+                            <p class="text-muted-custom italic">Aucun avis pour le moment.</p>
+                        <?php else: ?>
+                            <div class="d-flex flex-column gap-4">
+                                <?php foreach($reviews as $r): ?>
+                                    <div class="d-flex gap-3">
+                                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; flex-shrink: 0;">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="fw-bold text-main"><?= htmlspecialchars($r['pseudo']) ?></span>
+                                                <div class="text-warning small">
+                                                    <?php for($i=1; $i<=5; $i++): ?>
+                                                        <i class="fa-<?= $i <= $r['note'] ? 'solid' : 'regular' ?> fa-star"></i>
+                                                    <?php endfor; ?>
+                                                </div>
+                                            </div>
+                                            <p class="text-muted-custom mb-1"><?= htmlspecialchars($r['commentaire']) ?></p>
+                                            <small class="text-muted-custom opacity-75"><?= date('d/m/Y', strtotime($r['created_at'])) ?></small>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,7 +133,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="/js_project/public/investor/invest" id="investForm">
+                <form method="POST" action="<?= URLROOT ?>/investor/invest" id="investForm">
                     <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
                     <input type="hidden" id="prixUnitaire" value="<?= $project['prix_unitaire'] ?>">
                     
@@ -87,6 +150,9 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100 hover-elevate">Confirmer l'investissement</button>
+                    <a href="<?= URLROOT ?>/messages/chat?project_id=<?= $project['id'] ?>&other_id=<?= $project['startuper_id'] ?>" class="btn btn-outline-secondary w-100 mt-3">
+                        <i class="fa-regular fa-message me-2"></i>Contacter le fondateur
+                    </a>
                     <p class="text-muted-custom text-center mt-3 small mb-0"><i class="fa-solid fa-shield-halved me-1"></i>Paiement sécurisé et garanti</p>
                 </form>
             </div>

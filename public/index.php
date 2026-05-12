@@ -2,6 +2,8 @@
 session_start();
 
 // Simple Autoloader
+define('URLROOT', str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']));
+
 spl_autoload_register(function ($class_name) {
     // Map namespaces to directories: App -> app, Config -> config
     $prefix = explode('\\', $class_name)[0];
@@ -21,10 +23,13 @@ spl_autoload_register(function ($class_name) {
 $request = $_SERVER['REQUEST_URI'];
 $request = strtok($request, '?');
 
-// Remove base path depending on environment
-$base_path = '/js_project/public';
-if (strpos($request, $base_path) === 0) {
-    $request = substr($request, strlen($base_path));
+// Clean the request path by removing common base project paths if present
+$base_paths = ['/js_project/public', '/public'];
+foreach ($base_paths as $bp) {
+    if (strpos($request, $bp) === 0) {
+        $request = substr($request, strlen($bp));
+        break;
+    }
 }
 
 if ($request === '' || $request === '/') {

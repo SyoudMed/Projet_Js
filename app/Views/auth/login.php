@@ -9,7 +9,7 @@
             <div class="alert alert-danger rounded-3"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="/js_project/public/auth/login">
+        <form method="POST" action="<?= URLROOT ?>/auth/login" class="mt-4">
             <div class="mb-4">
                 <label class="form-label text-muted-custom small text-uppercase fw-semibold tracking-wider">Pseudo ou Email</label>
                 <input type="text" name="pseudo" class="form-control form-control-lg bg-surface" placeholder="Votre identifiant" required>
@@ -19,6 +19,9 @@
                 <input type="password" name="password" class="form-control form-control-lg bg-surface" placeholder="••••••••" required>
             </div>
             <button type="submit" class="btn btn-primary btn-lg w-100 mt-2">Se connecter</button>
+            <div class="text-center mt-4">
+                <p class="text-muted-custom">Pas encore de compte ? <a href="<?= URLROOT ?>/auth/registerInvestor" class="text-primary text-decoration-none fw-semibold">S'inscrire</a></p>
+            </div>
         </form>
     </div>
 </main>

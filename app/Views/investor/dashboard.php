@@ -7,7 +7,7 @@
             <h2 class="fw-bold mb-1">Portefeuille Investisseur</h2>
             <p class="text-muted-custom mb-0">Bienvenue, suivez vos investissements et projets favoris.</p>
         </div>
-        <a href="/js_project/public/investor/catalog" class="btn btn-primary shadow-sm hover-elevate px-4">
+        <a href="<?= URLROOT ?>/investor/catalog" class="btn btn-primary shadow-sm hover-elevate px-4">
             <i class="fa-solid fa-compass me-2"></i>Explorer les projets
         </a>
     </div>

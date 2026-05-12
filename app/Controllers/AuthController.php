@@ -19,11 +19,11 @@ class AuthController {
                 $_SESSION['role'] = $user['role'];
                 
                 if ($user['role'] === 'startuper') {
-                    header("Location: /js_project/public/startuper/dashboard");
+                    header("Location: " . URLROOT . "/startuper/dashboard");
                 } elseif ($user['role'] === 'capital_risque') {
-                    header("Location: /js_project/public/investor/dashboard");
+                    header("Location: " . URLROOT . "/investor/dashboard");
                 } else {
-                    header("Location: /js_project/public/admin/dashboard");
+                    header("Location: " . URLROOT . "/admin/dashboard");
                 }
                 exit;
             } else {
@@ -69,7 +69,7 @@ class AuthController {
                     $_SESSION['pseudo'] = $user['pseudo'];
                     $_SESSION['role'] = $user['role'];
                     
-                    $redirect = $role === 'startuper' ? '/js_project/public/startuper/dashboard' : '/js_project/public/investor/dashboard';
+                    $redirect = $role === 'startuper' ? URLROOT . '/startuper/dashboard' : URLROOT . '/investor/dashboard';
                     header("Location: " . $redirect);
                     exit;
                 } else {
@@ -87,7 +87,7 @@ class AuthController {
 
     public function logout() {
         session_destroy();
-        header("Location: /js_project/public/");
+        header("Location: " . URLROOT . "/");
         exit;
     }
 }

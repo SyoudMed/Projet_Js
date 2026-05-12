@@ -7,7 +7,7 @@
             <h2 class="fw-bold mb-1">Tableau de bord Startuper</h2>
             <p class="text-muted-custom mb-0">Bienvenue, gérez vos campagnes de financement.</p>
         </div>
-        <a href="/js_project/public/startuper/create" class="btn btn-primary shadow-sm hover-elevate px-4">
+        <a href="<?= URLROOT ?>/startuper/create" class="btn btn-primary shadow-sm hover-elevate px-4">
             <i class="fa-solid fa-plus me-2"></i>Nouveau Projet
         </a>
     </div>

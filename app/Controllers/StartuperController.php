@@ -7,7 +7,7 @@ class StartuperController {
     
     public function __construct() {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'startuper') {
-            header("Location: /js_project/public/auth/login");
+            header("Location: " . URLROOT . "/auth/login");
             exit;
         }
     }
@@ -27,7 +27,7 @@ class StartuperController {
             $projectModel = new Project();
             
             // Handle File Uploads
-            $uploadDir = __DIR__ . '/../../../public/uploads/';
+            $uploadDir = __DIR__ . '/../../public/uploads/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
             }
@@ -60,7 +60,7 @@ class StartuperController {
             ];
 
             if ($projectModel->create($data)) {
-                header("Location: /js_project/public/startuper/dashboard");
+                header("Location: " . URLROOT . "/startuper/dashboard");
                 exit;
             } else {
                 $error = "Erreur lors de la création du projet.";

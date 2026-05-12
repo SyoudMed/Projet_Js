@@ -14,10 +14,10 @@
                     <p class="hero-subtitle">StartuPInvest offre aux fondateurs une plateforme simple pour lever des fonds, et aux investisseurs un accès exclusif aux startups les plus prometteuses.</p>
                     
                     <div class="d-flex justify-content-center gap-3 flex-wrap mt-5">
-                        <a href="/js_project/public/auth/registerInvestor" class="btn btn-primary btn-lg px-5 py-3 shadow-sm">
+                        <a href="<?= URLROOT ?>/auth/registerInvestor" class="btn btn-primary btn-lg px-5 py-3 shadow-sm">
                             Explorer les opportunités
                         </a>
-                        <a href="/js_project/public/auth/registerStartuper" class="btn bg-surface border-custom text-main btn-lg px-5 py-3 hover-elevate">
+                        <a href="<?= URLROOT ?>/auth/registerStartuper" class="btn bg-surface border-custom text-main btn-lg px-5 py-3 hover-elevate">
                             Lancer une campagne
                         </a>
                     </div>
