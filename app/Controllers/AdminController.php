@@ -43,6 +43,26 @@ class AdminController {
             } else {
                 header("Location: " . URLROOT . "/admin/projects?error=1");
             }
+        }
+    }
+
+    public function users() {
+        $userModel = new User();
+        $users = $userModel->getAllUsers();
+        require __DIR__ . '/../Views/admin/users.php';
+    }
+
+    public function updateUserStatus() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'];
+            $status = $_POST['status'];
+            
+            $userModel = new User();
+            if ($userModel->updateStatus($id, $status)) {
+                header("Location: " . URLROOT . "/admin/users?success=1");
+            } else {
+                header("Location: " . URLROOT . "/admin/users?error=1");
+            }
             exit;
         }
     }

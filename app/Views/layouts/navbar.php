@@ -14,6 +14,13 @@
         <li class="nav-item">
           <a class="nav-link fw-medium" href="<?= URLROOT ?>/messages">Messages</a>
         </li>
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] !== 'admin'): ?>
+            <li class="nav-item">
+              <a class="nav-link fw-medium text-primary" href="<?= URLROOT ?>/messages/chat?project_id=null&other_id=1">
+                <i class="fa-solid fa-headset me-1"></i>Support
+              </a>
+            </li>
+        <?php endif; ?>
       </ul>
       <ul class="navbar-nav align-items-center">
         <?php if(isset($_SESSION['user_id'])): ?>

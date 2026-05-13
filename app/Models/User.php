@@ -46,6 +46,9 @@ class User {
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if(password_verify($password, $row['password'])) {
+                if($row['statut'] === 'bloque') {
+                    return 'blocked';
+                }
                 return $row;
             }
         }
@@ -59,5 +62,27 @@ class User {
         $stmt->bindParam(":pseudo", $pseudo);
         $stmt->execute();
         return $stmt->rowCount() > 0;
+    }
+
+    public function getAllUsers() {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE role != 'admin' ORDER BY created_at DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateStatus($id, $status) {
+        $query = "UPDATE " . $this->table_name . " SET statut = :status WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":status", $status);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
+    }
+
+    public function getAdmin() {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE role = 'admin' LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

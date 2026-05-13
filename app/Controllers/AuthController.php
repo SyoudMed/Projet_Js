@@ -13,7 +13,9 @@ class AuthController {
             $password = $_POST['password'] ?? '';
 
             $user = $userModel->login($pseudo, $password);
-            if ($user) {
+            if ($user === 'blocked') {
+                $error = "Votre compte a été suspendu par l'administrateur.";
+            } elseif ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['pseudo'] = $user['pseudo'];
                 $_SESSION['role'] = $user['role'];

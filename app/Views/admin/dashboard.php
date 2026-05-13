@@ -66,15 +66,15 @@
                     </a>
                 </div>
                 <div class="col-md-6">
-                    <div class="btn bg-bg-color border-custom w-100 text-start p-3 opacity-50 cursor-not-allowed">
+                    <a href="<?= URLROOT ?>/admin/users" class="btn bg-bg-color border-custom w-100 text-start p-3 hover-elevate">
                         <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-users-gear fs-4 text-secondary me-3"></i>
+                            <i class="fa-solid fa-users-gear fs-4 text-primary me-3"></i>
                             <div>
-                                <div class="fw-bold text-main">Gestion Utilisateurs (Bientôt)</div>
+                                <div class="fw-bold text-main">Gestion Utilisateurs</div>
                                 <div class="small text-muted-custom">Gérer les comptes Startuper et Investisseur.</div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
