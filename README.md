@@ -39,3 +39,22 @@ Tous les comptes (sauf l'admin) utilisent le mot de passe : **`password123`**
 ```bash
 docker-compose down
 ```
+
+## 🔄 Mise à jour pour les Collaborateurs
+Si vous avez déjà lancé le projet auparavant et que vous venez de `pull` de nouveaux changements (modifications de la base de données), vous devez réinitialiser votre environnement local :
+
+1. **Supprimez les conteneurs et les volumes existants** (Attention : cela réinitialise les données) :
+   ```bash
+   docker-compose down -v
+   ```
+2. **Relancez le projet** :
+   ```bash
+   docker-compose up -d
+   ```
+3. **Ré-exécutez le seed** pour repeupler les données :
+   ```bash
+   docker exec -it startupinvest_app php seed.php
+   ```
+
+---
+*Projet développé avec Antigravity - Powered by Google Gemini*

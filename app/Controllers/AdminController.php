@@ -27,8 +27,9 @@ class AdminController {
     }
 
     public function projects() {
+        $search = $_GET['search'] ?? '';
         $projectModel = new Project();
-        $projects = $projectModel->getAllProjects();
+        $projects = $projectModel->getAllProjects($search);
         require __DIR__ . '/../Views/admin/projects.php';
     }
 
@@ -47,8 +48,9 @@ class AdminController {
     }
 
     public function users() {
+        $search = $_GET['search'] ?? '';
         $userModel = new User();
-        $users = $userModel->getAllUsers();
+        $users = $userModel->getAllUsers($search);
         require __DIR__ . '/../Views/admin/users.php';
     }
 

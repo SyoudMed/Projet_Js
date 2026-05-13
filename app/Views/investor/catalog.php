@@ -8,7 +8,7 @@
             <p class="text-muted-custom mb-0">Découvrez et investissez dans les startups de demain.</p>
         </div>
         
-        <form method="GET" action="/js_project/public/investor/catalog" class="d-flex gap-2">
+        <form method="GET" action="<?= URLROOT ?>/investor/catalog" class="d-flex gap-2">
             <div class="input-group">
                 <span class="input-group-text bg-surface border-custom border-end-0 text-muted-custom"><i class="fa-solid fa-magnifying-glass"></i></span>
                 <input type="text" name="search" class="form-control bg-surface border-start-0 ps-0" placeholder="Rechercher..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
@@ -33,7 +33,7 @@
                 <i class="fa-solid fa-magnifying-glass fs-2"></i>
             </div>
             <p class="fs-5 text-muted-custom">Aucun projet ne correspond à votre recherche.</p>
-            <a href="/js_project/public/investor/catalog" class="btn btn-outline-secondary mt-2">Réinitialiser les filtres</a>
+            <a href="<?= URLROOT ?>/investor/catalog" class="btn btn-outline-secondary mt-2">Réinitialiser les filtres</a>
         </div>
     <?php else: ?>
         <div class="row g-4">
@@ -43,7 +43,7 @@
                         <div class="card-body p-4 d-flex flex-column h-100">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 border border-primary border-opacity-25"><?= htmlspecialchars($p['secteur']) ?></span>
-                                <form method="POST" action="/js_project/public/investor/toggleFavorite">
+                                <form method="POST" action="<?= URLROOT ?>/investor/toggleFavorite">
                                     <input type="hidden" name="project_id" value="<?= $p['id'] ?>">
                                     <button type="submit" class="btn btn-sm btn-link text-muted-custom p-0 hover-elevate"><i class="fa-regular fa-star fs-5"></i></button>
                                 </form>
@@ -65,7 +65,7 @@
                                 </div>
                             </div>
                             
-                            <a href="/js_project/public/investor/project?id=<?= $p['id'] ?>" class="btn btn-outline-primary w-100 fw-medium">Voir les détails</a>
+                            <a href="<?= URLROOT ?>/investor/project?id=<?= $p['id'] ?>" class="btn btn-outline-primary w-100 fw-medium">Voir les détails</a>
                         </div>
                     </div>
                 </div>

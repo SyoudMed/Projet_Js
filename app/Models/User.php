@@ -64,9 +64,22 @@ class User {
         return $stmt->rowCount() > 0;
     }
 
-    public function getAllUsers() {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE role != 'admin' ORDER BY created_at DESC";
+    public function getAllUsers($search = '') {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE role != 'admin'";
+        
+        if (!empty($search)) {
+            $query .= " AND (pseudo LIKE :search OR email LIKE :search OR nom LIKE :search OR prenom LIKE :search OR nom_entreprise LIKE :search)";
+        }
+
+        $query .= " ORDER BY created_at DESC";
+        
         $stmt = $this->conn->prepare($query);
+        
+        if (!empty($search)) {
+            $searchTerm = "%{$search}%";
+            $stmt->bindParam(":search", $searchTerm);
+        }
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -47,7 +47,7 @@ class Project {
                   WHERE p.statut = 'actif'"; // Temporarily allowing en_attente for testing
         
         if (!empty($search)) {
-            $query .= " AND (p.titre LIKE :search OR p.description LIKE :search)";
+            $query .= " AND (p.titre LIKE :search OR p.description LIKE :search OR u.nom_entreprise LIKE :search)";
         }
         if (!empty($secteur)) {
             $query .= " AND p.secteur = :secteur";
@@ -80,12 +80,24 @@ class Project {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getAllProjects() {
+    public function getAllProjects($search = '') {
         $query = "SELECT p.*, u.nom, u.prenom, u.nom_entreprise 
                   FROM " . $this->table_name . " p 
-                  JOIN users u ON p.startuper_id = u.id 
-                  ORDER BY p.created_at DESC";
+                  JOIN users u ON p.startuper_id = u.id";
+        
+        if (!empty($search)) {
+            $query .= " WHERE p.titre LIKE :search OR u.nom_entreprise LIKE :search OR p.description LIKE :search";
+        }
+
+        $query .= " ORDER BY p.created_at DESC";
+        
         $stmt = $this->conn->prepare($query);
+        
+        if (!empty($search)) {
+            $searchTerm = "%{$search}%";
+            $stmt->bindParam(":search", $searchTerm);
+        }
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

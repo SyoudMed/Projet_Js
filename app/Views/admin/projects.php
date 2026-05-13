@@ -9,8 +9,15 @@
     <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom border-custom">
         <div>
             <h2 class="fw-bold mb-1">Modération des Projets</h2>
-            <p class="text-muted-custom mb-0">Validez ou suspendez les campagnes de financement.</p>
+            <p class="text-muted-custom mb-0">Approuvez ou suspendez les campagnes de financement.</p>
         </div>
+        <form method="GET" action="<?= URLROOT ?>/admin/projects" class="d-flex gap-2">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-surface border-custom border-end-0"><i class="fa-solid fa-search"></i></span>
+                <input type="text" name="search" class="form-control bg-surface border-start-0" placeholder="Rechercher..." value="<?= htmlspecialchars($search ?? '') ?>" style="width: 200px;">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary px-3">Filtrer</button>
+        </form>
     </div>
 
     <?php if(isset($_GET['success'])): ?>
