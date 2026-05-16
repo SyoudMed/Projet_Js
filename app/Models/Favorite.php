@@ -24,13 +24,15 @@ class Favorite {
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":investor_id", $investor_id);
             $stmt->bindParam(":project_id", $project_id);
-            return $stmt->execute();
+            $stmt->execute();
+            return false; // Removed
         } else {
             $query = "INSERT INTO " . $this->table_name . " (investor_id, project_id) VALUES (:investor_id, :project_id)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":investor_id", $investor_id);
             $stmt->bindParam(":project_id", $project_id);
-            return $stmt->execute();
+            $stmt->execute();
+            return true; // Added
         }
     }
 

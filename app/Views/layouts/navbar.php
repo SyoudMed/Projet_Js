@@ -12,7 +12,16 @@
           <a class="nav-link fw-medium" href="<?= URLROOT ?>/">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link fw-medium" href="<?= URLROOT ?>/messages">Messages</a>
+          <a class="nav-link fw-medium d-flex align-items-center" href="<?= URLROOT ?>/messages">
+            Messages
+            <?php 
+                $msgModelForBadge = new \App\Models\Message();
+                $unreadTotalCount = $msgModelForBadge->getUnreadCount($_SESSION['user_id'] ?? 0);
+                if($unreadTotalCount > 0): 
+            ?>
+                <span class="badge rounded-pill bg-danger ms-1" style="font-size: 0.65rem;"><?= $unreadTotalCount ?></span>
+            <?php endif; ?>
+          </a>
         </li>
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] !== 'admin'): ?>
             <li class="nav-item">
@@ -29,6 +38,8 @@
                     <i class="fa-regular fa-circle-user me-1"></i> <?= htmlspecialchars($_SESSION['pseudo'] ?? 'Mon Compte') ?>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-custom mt-2">
+                    <li><a class="dropdown-item py-2" href="<?= URLROOT ?>/auth/profile"><i class="fa-solid fa-user-gear me-2 text-muted-custom"></i>Mon Profil</a></li>
+                    <li><hr class="dropdown-divider border-custom"></li>
                     <?php if($_SESSION['role'] === 'startuper'): ?>
                         <li><a class="dropdown-item py-2" href="<?= URLROOT ?>/startuper/dashboard"><i class="fa-solid fa-chart-line me-2 text-muted-custom"></i>Tableau de bord</a></li>
                     <?php elseif($_SESSION['role'] === 'capital_risque'): ?>

@@ -37,8 +37,13 @@ class MessagesController {
                     'other_id' => $other_id,
                     'other_name' => $other_name,
                     'last_message' => $msg['contenu'],
-                    'date' => $msg['created_at']
+                    'date' => $msg['created_at'],
+                    'has_unread' => false
                 ];
+            }
+            
+            if ($msg_receiver_id === $user_id && $msg['is_read'] == 0) {
+                $conversations[$key]['has_unread'] = true;
             }
         }
 
@@ -58,6 +63,7 @@ class MessagesController {
         $projectModel = new Project();
         
         $messages = $messageModel->getMessagesByProject($project_id, $_SESSION['user_id'], $other_id);
+        $messageModel->markAsRead($project_id, $_SESSION['user_id'], $other_id);
         
         if ($project_id === 'null' || $project_id == 0) {
             $project = [

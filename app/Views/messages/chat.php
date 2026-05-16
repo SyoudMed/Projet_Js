@@ -21,7 +21,7 @@
                 </div>
 
                 <!-- Messages Area -->
-                <div class="flex-grow-1 overflow-auto p-4 bg-bg-color" id="chat-messages">
+                <div class="flex-grow-1 overflow-auto p-4 bg-main" id="chat-messages">
                     <?php if(empty($messages)): ?>
                         <div class="text-center py-5 opacity-50">
                             <p>Envoyez un message pour commencer la discussion.</p>
@@ -47,7 +47,7 @@
                     <form method="POST" action="<?= URLROOT ?>/messages/send" class="d-flex gap-2">
                         <input type="hidden" name="project_id" value="<?= $project_id ?>">
                         <input type="hidden" name="receiver_id" value="<?= $other_id ?>">
-                        <input type="text" name="contenu" class="form-control bg-bg-color border-custom" placeholder="Tapez votre message..." required autofocus autocomplete="off">
+                        <input type="text" name="contenu" class="form-control bg-main border-custom" placeholder="Tapez votre message..." required autofocus autocomplete="off">
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>

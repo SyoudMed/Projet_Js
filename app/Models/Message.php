@@ -70,4 +70,28 @@ class Message {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function markAsRead($project_id, $receiver_id, $sender_id) {
+        $project_clause = ($project_id === 'null' || $project_id === null) ? "project_id IS NULL" : "project_id = :project_id";
+        $query = "UPDATE " . $this->table_name . " 
+                  SET is_read = 1 
+                  WHERE $project_clause AND receiver_id = :receiver_id AND sender_id = :sender_id";
+        
+        $stmt = $this->conn->prepare($query);
+        if ($project_id !== 'null' && $project_id !== null) {
+            $stmt->bindParam(":project_id", $project_id);
+        }
+        $stmt->bindParam(":receiver_id", $receiver_id);
+        $stmt->bindParam(":sender_id", $sender_id);
+        return $stmt->execute();
+    }
+
+    public function getUnreadCount($user_id) {
+        $query = "SELECT COUNT(*) as count FROM " . $this->table_name . " WHERE receiver_id = :user_id AND is_read = 0";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_id", $user_id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['count'];
+    }
 }

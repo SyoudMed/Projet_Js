@@ -21,10 +21,10 @@
                 <div class="p-4 p-md-5">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-medium border border-primary border-opacity-25"><?= htmlspecialchars($project['secteur']) ?></span>
-                        <form method="POST" action="<?= URLROOT ?>/investor/toggleFavorite">
-                            <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
-                            <button type="submit" class="btn btn-outline-warning btn-sm hover-elevate"><i class="fa-regular fa-star me-2"></i>Ajouter aux favoris</button>
-                        </form>
+                        <button id="favoriteBtn" data-project="<?= $project['id'] ?>" class="btn <?= $is_favorite ? 'btn-warning' : 'btn-outline-warning' ?> btn-sm hover-elevate">
+                            <i class="<?= $is_favorite ? 'fa-solid' : 'fa-regular' ?> fa-star me-2"></i>
+                            <span id="favoriteText"><?= $is_favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' ?></span>
+                        </button>
                     </div>
 
                     <h1 class="fw-bold text-main mb-3"><?= htmlspecialchars($project['titre']) ?></h1>
@@ -120,12 +120,20 @@
                 
                 <div class="mb-4">
                     <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted-custom">Progression</span>
+                        <span class="fw-bold text-main"><?= $project['percent_funded'] ?>%</span>
+                    </div>
+                    <div class="progress bg-bg-color rounded-pill border border-custom mb-4" style="height: 10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: <?= $project['percent_funded'] ?>%"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted-custom">Prix par action</span>
                         <span class="fw-bold text-main fs-5"><?= number_format($project['prix_unitaire'], 2) ?> DT</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted-custom">Actions disponibles</span>
-                        <span class="fw-medium text-main"><?= number_format($project['nb_actions']) ?></span>
+                        <span class="text-muted-custom">Actions restantes</span>
+                        <span class="fw-medium text-main"><?= number_format($project['nb_actions'] - $project['sold_actions']) ?></span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span class="text-muted-custom">Objectif total</span>
@@ -133,28 +141,43 @@
                     </div>
                 </div>
 
-                <form method="POST" action="<?= URLROOT ?>/investor/invest" id="investForm">
-                    <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
-                    <input type="hidden" id="prixUnitaire" value="<?= $project['prix_unitaire'] ?>">
-                    
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Nombre d'actions à acheter</label>
-                        <input type="number" name="nb_actions" id="nbActionsInput" class="form-control form-control-lg bg-surface" min="1" max="<?= $project['nb_actions'] ?>" value="1" required>
+                <?php if($project['statut'] === 'cloture'): ?>
+                    <div class="alert alert-success border-0 rounded-4 text-center p-4">
+                        <i class="fa-solid fa-circle-check fa-3x mb-3 d-block"></i>
+                        <h5 class="fw-bold mb-1">Financement Terminé</h5>
+                        <p class="small mb-0 opacity-75">Ce projet a atteint son objectif de financement. Merci à tous les investisseurs !</p>
                     </div>
-
-                    <div class="bg-primary bg-opacity-10 rounded-3 p-3 mb-4 border border-primary border-opacity-25">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-primary fw-medium">Total à payer</span>
-                            <span class="text-primary fw-bold fs-4" id="totalPriceCalc"><?= number_format($project['prix_unitaire'], 2) ?> DT</span>
+                <?php else: ?>
+                    <?php if(isset($_GET['error']) && $_GET['error'] === 'insufficient_shares'): ?>
+                        <div class="alert alert-danger small mb-4 py-2">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>Pas assez d'actions disponibles.
                         </div>
-                    </div>
+                    <?php endif; ?>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100 hover-elevate">Confirmer l'investissement</button>
-                    <a href="<?= URLROOT ?>/messages/chat?project_id=<?= $project['id'] ?>&other_id=<?= $project['startuper_id'] ?>" class="btn btn-outline-secondary w-100 mt-3">
-                        <i class="fa-regular fa-message me-2"></i>Contacter le fondateur
-                    </a>
-                    <p class="text-muted-custom text-center mt-3 small mb-0"><i class="fa-solid fa-shield-halved me-1"></i>Paiement sécurisé et garanti</p>
-                </form>
+                    <form method="POST" action="<?= URLROOT ?>/investor/invest" id="investForm">
+                        <input type="hidden" name="project_id" value="<?= $project['id'] ?>">
+                        <input type="hidden" id="prixUnitaire" value="<?= $project['prix_unitaire'] ?>">
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Nombre d'actions à acheter</label>
+                            <input type="number" name="nb_actions" id="nbActionsInput" class="form-control form-control-lg bg-surface" min="1" max="<?= $project['nb_actions'] - $project['sold_actions'] ?>" value="1" required>
+                        </div>
+
+                        <div class="bg-primary bg-opacity-10 rounded-3 p-3 mb-4 border border-primary border-opacity-25">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-primary fw-medium">Total à payer</span>
+                                <span class="text-primary fw-bold fs-4" id="totalPriceCalc"><?= number_format($project['prix_unitaire'], 2) ?> DT</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 hover-elevate">Confirmer l'investissement</button>
+                    </form>
+                <?php endif; ?>
+
+                <a href="<?= URLROOT ?>/messages/chat?project_id=<?= $project['id'] ?>&other_id=<?= $project['startuper_id'] ?>" class="btn btn-outline-secondary w-100 mt-3">
+                    <i class="fa-regular fa-message me-2"></i>Contacter le fondateur
+                </a>
+                <p class="text-muted-custom text-center mt-3 small mb-0"><i class="fa-solid fa-shield-halved me-1"></i>Paiement sécurisé et garanti</p>
             </div>
         </div>
     </div>
@@ -173,6 +196,39 @@ document.addEventListener('DOMContentLoaded', function() {
         // Format as number with 2 decimals
         priceDisplay.textContent = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total) + ' DT';
     });
+
+    // Favorite AJAX
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function() {
+            const projectId = this.getAttribute('data-project');
+            const icon = this.querySelector('i');
+            const textSpan = document.getElementById('favoriteText');
+
+            fetch('<?= URLROOT ?>/investor/toggleFavorite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: 'project_id=' + projectId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.is_favorite) {
+                        this.classList.replace('btn-outline-warning', 'btn-warning');
+                        icon.classList.replace('fa-regular', 'fa-solid');
+                        textSpan.textContent = 'Retirer des favoris';
+                    } else {
+                        this.classList.replace('btn-warning', 'btn-outline-warning');
+                        icon.classList.replace('fa-solid', 'fa-regular');
+                        textSpan.textContent = 'Ajouter aux favoris';
+                    }
+                }
+            });
+        });
+    }
 });
 </script>
 

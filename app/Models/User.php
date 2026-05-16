@@ -64,9 +64,12 @@ class User {
         return $stmt->rowCount() > 0;
     }
 
-    public function getAllUsers($search = '') {
+    public function getAllUsers($search = '', $role = '') {
         $query = "SELECT * FROM " . $this->table_name . " WHERE role != 'admin'";
         
+        if (!empty($role)) {
+            $query .= " AND role = :role";
+        }
         if (!empty($search)) {
             $query .= " AND (pseudo LIKE :search OR email LIKE :search OR nom LIKE :search OR prenom LIKE :search OR nom_entreprise LIKE :search)";
         }
@@ -75,6 +78,7 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         
+        if (!empty($role)) $stmt->bindParam(":role", $role);
         if (!empty($search)) {
             $searchTerm = "%{$search}%";
             $stmt->bindParam(":search", $searchTerm);
@@ -97,5 +101,40 @@ class User {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserById($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function update($id, $data) {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET nom = :nom, prenom = :prenom, email = :email, pseudo = :pseudo, 
+                      nom_entreprise = :nom_entreprise, adresse_entreprise = :adresse_entreprise 
+                  WHERE id = :id";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":nom", $data['nom']);
+        $stmt->bindParam(":prenom", $data['prenom']);
+        $stmt->bindParam(":email", $data['email']);
+        $stmt->bindParam(":pseudo", $data['pseudo']);
+        $stmt->bindParam(":nom_entreprise", $data['nom_entreprise']);
+        $stmt->bindParam(":adresse_entreprise", $data['adresse_entreprise']);
+        $stmt->bindParam(":id", $id);
+
+        return $stmt->execute();
+    }
+
+    public function updatePassword($id, $new_password) {
+        $query = "UPDATE " . $this->table_name . " SET password = :password WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $stmt->bindParam(":password", $hashed_password);
+        $stmt->bindParam(":id", $id);
+        return $stmt->execute();
     }
 }

@@ -38,7 +38,12 @@
                                         </div>
                                     </div>
                                     <div class="text-end">
-                                        <small class="text-muted-custom"><?= date('d M, H:i', strtotime($conv['date'])) ?></small>
+                                        <div class="mb-1">
+                                            <small class="text-muted-custom"><?= date('d M, H:i', strtotime($conv['date'])) ?></small>
+                                        </div>
+                                        <?php if($conv['has_unread']): ?>
+                                            <span class="badge rounded-pill bg-danger">Nouveau</span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </a>

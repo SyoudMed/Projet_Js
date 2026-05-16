@@ -92,4 +92,58 @@ class AuthController {
         header("Location: " . URLROOT . "/");
         exit;
     }
+
+    public function profile() {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: " . URLROOT . "/auth/login");
+            exit;
+        }
+
+        $userModel = new User();
+        $user = $userModel->getUserById($_SESSION['user_id']);
+        
+        require __DIR__ . '/../Views/auth/profile.php';
+    }
+
+    public function updateProfile() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userModel = new User();
+            $id = $_SESSION['user_id'];
+            
+            $data = [
+                'nom' => $_POST['nom'],
+                'prenom' => $_POST['prenom'],
+                'email' => $_POST['email'],
+                'pseudo' => $_POST['pseudo'],
+                'nom_entreprise' => $_POST['nom_entreprise'] ?? '',
+                'adresse_entreprise' => $_POST['adresse_entreprise'] ?? ''
+            ];
+
+            if ($userModel->update($id, $data)) {
+                $_SESSION['pseudo'] = $data['pseudo']; // Update session
+                header("Location: " . URLROOT . "/auth/profile?success=1");
+            } else {
+                header("Location: " . URLROOT . "/auth/profile?error=1");
+            }
+            exit;
+        }
+    }
+
+    public function changePassword() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userModel = new User();
+            $id = $_SESSION['user_id'];
+            $current_password = $_POST['current_password'];
+            $new_password = $_POST['new_password'];
+
+            $user = $userModel->getUserById($id);
+            if (password_verify($current_password, $user['password'])) {
+                $userModel->updatePassword($id, $new_password);
+                header("Location: " . URLROOT . "/auth/profile?success_pw=1");
+            } else {
+                header("Location: " . URLROOT . "/auth/profile?error_pw=1");
+            }
+            exit;
+        }
+    }
 }
